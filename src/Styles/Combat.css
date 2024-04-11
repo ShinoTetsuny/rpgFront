@@ -1,0 +1,44 @@
+/* Overall container */
+#battle-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+/* Timer and health bars container */
+.battle-info {
+    width: 45%;
+}
+
+/* Timer */
+.battle-info h3 {
+    margin-bottom: 5px;
+}
+
+/* Health bars */
+.health-bar-container {
+    border: 1px solid black;
+    width: 200px;
+    margin-bottom: 10px;
+}
+
+.health-bar {
+    height: 20px;
+}
+
+#mob-boss-health-bar {
+    background-color: red;
+}
+
+#player-health-bar {
+    background-color: green;
+}
+
+/* Attack buttons */
+#attack-buttons {
+    width: 45%;
+}
+
+#attack-buttons button {
+    margin-right: 5px;
+    margin-top: 10px;
+}

@@ -1,3 +1,18 @@
-//Bouton recommencer
-////Afficher les stats du joueur
-//Afficher le nombre de combats gagnés
+import { Link } from "react-router-dom";
+import React from "react";
+import "../styles/Nav.css"
+
+export default function Nav() {
+  return (
+    <nav className="navbar">
+      <ul className="navbar-nav">
+        <li className="nav-item">
+          <Link className="nav-link" to="/">Création de personnage</Link>
+        </li>
+        <li className="nav-item">
+          <Link className="nav-link" to="/combat">Combat</Link>
+        </li>
+      </ul>
+    </nav>
+  );
+}

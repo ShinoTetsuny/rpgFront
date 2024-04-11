@@ -1,35 +1,43 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './style/App.css'
+import Creation from './Components/Creation'
+import Weapon from './Components/Weapon'
+import './styles/App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+    const [showWarning, setShowWarning] = useState(false);
 
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    const handleSaveCharacter = () => {
+      const stats = JSON.parse(localStorage.getItem('currentCharacterStats'));
+      const selectedWeapon = localStorage.getItem('currentCharacterWeapon');
+      
+      if (!stats || !selectedWeapon) {
+        setShowWarning(true);
+        console.log(selectedWeapon, 'test weapon')
+        return;
+      }
+  
+      const totalPointsUsed = Object.values(stats).reduce((total, stat) => total + stat, 0) - 10; // subtracting the initial 2 points per stat
+      if (totalPointsUsed !== 5) {
+        setShowWarning(true);
+        console.log(totalPointsUsed, 'test totalPointsUsed')
+        return;
+      }
+      
+      setShowWarning(false);
+    };
+
+    return (
+        <>
+            <h1>Création de personnage</h1>
+            <Creation />
+            <h1>Choix de l'arme</h1>
+            <Weapon />
+            {showWarning && (
+            <div className="warning">Please allocate all stat points and select a weapon before saving.</div>
+            )}
+            <button onClick={handleSaveCharacter}>Save Character</button>
+        </>
+    )
 }
 
 export default App
