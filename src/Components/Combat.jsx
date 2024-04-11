@@ -339,7 +339,7 @@ export default function Combat() {
         <div id='battle-container'>
             <div className='battle-info'>
                 <div>
-                    <h3>Mob/Boss Timer</h3>
+                    {bossFight ? <h3>Boss Timer</h3> : <h3>Mob Timer</h3>}
                     <div>
                         <Countdown
                             date={Date.now() + (mobBoss.timer * 1000)}
@@ -354,7 +354,7 @@ export default function Combat() {
                             ref={mobBossTimerActive}
                         />
                     </div>
-                    { bossFight ? <h3>Boss {mobBoss.name} Health: {mobBoss.health}</h3> : <h3>Mob {mobBoss.name} Health: {mobBoss.health}</h3>}
+                    <h3>{mobBoss.name} Health: {mobBoss.health}</h3>
                     <div style={{ border: '1px solid black', width: '200px', marginBottom: '10px' }}>
                         <div id="mob-boss-health-bar" style={{ backgroundColor: 'red', width: '100%', height: '20px' }}></div>
                     </div>
