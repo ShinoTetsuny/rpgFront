@@ -2,6 +2,7 @@ import { useState } from 'react'
 import Creation from './Components/Creation'
 import Weapon from './Components/Weapon'
 import './styles/App.css'
+import { Link } from 'react-router-dom';
 
 function App() {
     localStorage.setItem('currentCharacterStats', JSON.stringify({ int: 0, str: 0, dex: 0, sag: 0, con: 0 }));
@@ -30,6 +31,7 @@ function App() {
 
     return (
         <>
+            <h1><Link to={`/backoffice`}>BackOffice</Link></h1>
             <h1>Création de personnage</h1>
             <Creation />
             <h1>Choix de l'arme</h1>
