@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Navigate, useParams, redirect } from 'react-router-dom';
+import { Navigate, useParams } from 'react-router-dom';
 
 const styles = {
   detailsContainer: {
@@ -13,37 +13,36 @@ const styles = {
 
 function BossDetails() {
   const { id } = useParams();
-  const [weapon, setWeapon] = useState(null);
-  const [editWeapon, setEditWeapon] = useState({ nameWeapon: '', dmgRangeWeapon: '', dmgCDWeapon: 0, type: ''});
+  const [boss, setBoss] = useState(null);
+  const [editBoss, setEditBoss] = useState({ nameBoss: "", strBoss: 0, dexBoss: 0, sagBoss: 0, conBoss: 0,intBoss: 0, dmgRangeBoss: '', dmgCDBoss: 0});
   const [isEditing, setIsEditing] = useState(false);
 
-  const fetchWeaponDetails = async () => {
+  const fetchBossDetails = async () => {
     try {
-      const res = await axios.get(`http://localhost:3000/weapon/${id}`);
-      setWeapon(res.data);
-      setEditWeapon({ nameWeapon: res.data.nameWeapon, dmgRangeWeapon: res.data.dmgRangeWeapon, dmgCDWeapon: res.data.dmgCDWeapon, type: res.data.type });
+      const res = await axios.get(`http://localhost:3000/boss/${id}`);
+      setBoss(res.data);
+      setEditBoss({ nameBoss: res.data.nameBoss, strBoss: res.data.strBoss, dexBoss: res.data.dexBoss, sagBoss: res.data.sagBoss, conBoss: res.data.conBoss,intBoss: res.data.intBoss, dmgRangeBoss: res.data.dmgRangeBoss, dmgCDBoss: res.data.dmgCDBoss });
     } catch (error) {
-      console.error('Error fetching Weapon details:', error);
+      console.error('Error fetching Boss details:', error);
     }
   };
 
-  const handleEditEngine = async () => {
+  const handleEditBoss = async () => {
     try {
-      await axios.put(`http://localhost:3000/weapon/${id}`, editWeapon);
+      await axios.put(`http://localhost:3000/boss/${id}`, editBoss);
       setIsEditing(false);
-      fetchWeaponDetails();
+      fetchBossDetails();
     } catch (error) {
-      console.error('Error editing engine:', error);
+      console.error('Error editing boss:', error);
     }
   };
 
-  const handleDeleteEngine = async () => {
+  const handleDeleteBoss = async () => {
     try {
-      await axios.delete(`http://localhost:3000/weapon/${id}`);
-      // Utilisez la méthode `Navigate` ici à l'intérieur du composant
+      await axios.delete(`http://localhost:3000/boss/${id}`);
       Navigate('/backoffice');
     } catch (error) {
-      console.error('Error deleting weapon:', error);
+      console.error('Error deleting boss:', error);
     }
   };
 
@@ -52,41 +51,65 @@ function BossDetails() {
   };
 
   useEffect(() => {
-    fetchWeaponDetails();
+    fetchBossDetails();
   }, [id]);
 
   return (
     <div style={styles.detailsContainer}>
-      {weapon ? (
+      {boss ? (
         <div>
-          <h1>Détails de l'arme :</h1>
+          <h1>Détails du boss :</h1>
           {isEditing ? (
             <div>
               <label>Nom :</label>
               <input
                 type="text"
-                value={editWeapon.nameWeapon}
-                onChange={(e) => setEditWeapon({ ...editWeapon, nameWeapon: e.target.value })}
+                value={editBoss.nameBoss}
+                onChange={(e) => setEditBoss({ ...editBoss, nameBoss: e.target.value })}
               />
-              <label>Range Weapon :</label>
+              <label>STR :</label>
               <input
                 type="number"
-                value={editWeapon.dmgRangeWeapon}
-                onChange={(e) => setEditWeapon({ ...editWeapon, dmgRangeWeapon: e.target.value })}
+                value={editBoss.strBoss}
+                onChange={(e) => setEditBoss({ ...editBoss, strBoss: parseInt(e.target.value) })}
               />
-              <label>CDR Weapon :</label>
+              <label>DEX :</label>
+              <input
+                type="number"
+                value={editBoss.dexBoss}
+                onChange={(e) => setEditBoss({ ...editBoss, dexBoss: parseInt(e.target.value) })}
+              />
+              <label>SAG :</label>
+              <input
+                type="number"
+                value={editBoss.sagBoss}
+                onChange={(e) => setEditBoss({ ...editBoss, sagBoss: parseInt(e.target.value) })}
+              />
+              <label>CON :</label>
+              <input
+                type="number"
+                value={editBoss.conBoss}
+                onChange={(e) => setEditBoss({ ...editBoss, conBoss: parseInt(e.target.value) })}
+              />
+              <label>INT :</label>
+              <input
+                type="number"
+                value={editBoss.intBoss}
+                onChange={(e) => setEditBoss({ ...editBoss, intBoss: parseInt(e.target.value) })}
+              />
+              <label>Range Damage :</label>
               <input
                 type="text"
-                value={editWeapon.dmgCDWeapon}
-                onChange={(e) => setEditWeapon({ ...editWeapon, dmgCDWeapon: e.target.value })}
+                value={editBoss.dmgRangeBoss}
+                onChange={(e) => setEditBoss({ ...editBoss, dmgRangeBoss: e.target.value })}
               />
-              <label>Type :</label>
+              <label>CDR :</label>
               <input
-                type="text"
-                value={editWeapon.type}
-                onChange={(e) => setEditWeapon({ ...editWeapon, type: e.target.value })}
+                type="number"
+                value={editBoss.dmgCDBoss}
+                onChange={(e) => setEditBoss({ ...editBoss, dmgCDBoss: parseInt(e.target.value) })}
               />
-              <button style={styles.button} onClick={handleEditEngine}>
+              <button style={styles.button} onClick={handleEditBoss}>
                 Enregistrer
               </button>
               <button style={styles.button} onClick={handleCancelEdit}>
@@ -95,13 +118,19 @@ function BossDetails() {
             </div>
           ) : (
             <div>
-              <p><strong>Nom :</strong> {engine.name}</p>
-              <p><strong>Type :</strong> {engine.type}</p>
+              <p><strong>Nom :</strong> {boss.nameBoss}</p>
+              <p><strong>STR :</strong> {boss.strBoss}</p>
+              <p><strong>DEX :</strong> {boss.dexBoss}</p>
+              <p><strong>SAG :</strong> {boss.sagBoss}</p>
+              <p><strong>CON :</strong> {boss.conBoss}</p>
+              <p><strong>INT :</strong> {boss.intBoss}</p>
+              <p><strong>Range Damage :</strong> {boss.dmgRangeBoss}</p>
+              <p><strong>CDR :</strong> {boss.dmgCDBoss}</p>
               <button style={styles.button} onClick={() => setIsEditing(true)}>
-                Modifier l'Engine
+                Modifier le Boss
               </button>
-              <button style={styles.button} onClick={handleDeleteEngine}>
-                Supprimer l'Engine
+              <button style={styles.button} onClick={handleDeleteBoss}>
+                Supprimer le Boss
               </button>
             </div>
           )}

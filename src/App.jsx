@@ -34,7 +34,6 @@ function App() {
 
     return (
         <>
-            <h1><Link to={`/backoffice`}>BackOffice</Link></h1>
             <h1>Création de personnage</h1>
             <Creation />
             <h1>Choix de l'arme</h1>

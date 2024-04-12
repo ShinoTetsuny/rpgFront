@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Navigate, useParams, redirect } from 'react-router-dom';
+import { Navigate, useParams } from 'react-router-dom';
 
 const styles = {
   detailsContainer: {
@@ -11,39 +11,38 @@ const styles = {
   },
 };
 
-function MobDetail() {
+function MobDetails() {
   const { id } = useParams();
-  const [weapon, setWeapon] = useState(null);
-  const [editWeapon, setEditWeapon] = useState({ nameWeapon: '', dmgRangeWeapon: '', dmgCDWeapon: 0, type: ''});
+  const [mob, setMob] = useState(null);
+  const [editMob, setEditMob] = useState({ nameMob: '', strMob: 0, dexMob: 0, sagMob: 0, conMob: 0, intMob: 0 });
   const [isEditing, setIsEditing] = useState(false);
 
-  const fetchWeaponDetails = async () => {
+  const fetchMobDetails = async () => {
     try {
-      const res = await axios.get(`http://localhost:3000/weapon/${id}`);
-      setWeapon(res.data);
-      setEditWeapon({ nameWeapon: res.data.nameWeapon, dmgRangeWeapon: res.data.dmgRangeWeapon, dmgCDWeapon: res.data.dmgCDWeapon, type: res.data.type });
+      const res = await axios.get(`http://localhost:3000/mob/${id}`);
+      setMob(res.data);
+      setEditMob({ nameMob: res.data.nameMob, strMob: res.data.strMob, dexMob: res.data.dexMob, sagMob: res.data.sagMob, conMob: res.data.conMob, intMob: res.data.intMob });
     } catch (error) {
-      console.error('Error fetching Weapon details:', error);
+      console.error('Error fetching Mob details:', error);
     }
   };
 
-  const handleEditEngine = async () => {
+  const handleEditMob = async () => {
     try {
-      await axios.put(`http://localhost:3000/weapon/${id}`, editWeapon);
+      await axios.put(`http://localhost:3000/mob/${id}`, editMob);
       setIsEditing(false);
-      fetchWeaponDetails();
+      fetchMobDetails();
     } catch (error) {
-      console.error('Error editing engine:', error);
+      console.error('Error editing mob:', error);
     }
   };
 
-  const handleDeleteEngine = async () => {
+  const handleDeleteMob = async () => {
     try {
-      await axios.delete(`http://localhost:3000/weapon/${id}`);
-      // Utilisez la méthode `Navigate` ici à l'intérieur du composant
+      await axios.delete(`http://localhost:3000/mob/${id}`);
       Navigate('/backoffice');
     } catch (error) {
-      console.error('Error deleting weapon:', error);
+      console.error('Error deleting mob:', error);
     }
   };
 
@@ -52,41 +51,53 @@ function MobDetail() {
   };
 
   useEffect(() => {
-    fetchWeaponDetails();
+    fetchMobDetails();
   }, [id]);
 
   return (
     <div style={styles.detailsContainer}>
-      {weapon ? (
+      {mob ? (
         <div>
-          <h1>Détails de l'arme :</h1>
+          <h1>Détails du mob :</h1>
           {isEditing ? (
             <div>
               <label>Nom :</label>
               <input
                 type="text"
-                value={editWeapon.nameWeapon}
-                onChange={(e) => setEditWeapon({ ...editWeapon, nameWeapon: e.target.value })}
+                value={editMob.nameMob}
+                onChange={(e) => setEditMob({ ...editMob, nameMob: e.target.value })}
               />
-              <label>Range Weapon :</label>
+              <label>STR :</label>
               <input
                 type="number"
-                value={editWeapon.dmgRangeWeapon}
-                onChange={(e) => setEditWeapon({ ...editWeapon, dmgRangeWeapon: e.target.value })}
+                value={editMob.strMob}
+                onChange={(e) => setEditMob({ ...editMob, strMob: parseInt(e.target.value) })}
               />
-              <label>CDR Weapon :</label>
+              <label>DEX :</label>
               <input
-                type="text"
-                value={editWeapon.dmgCDWeapon}
-                onChange={(e) => setEditWeapon({ ...editWeapon, dmgCDWeapon: e.target.value })}
+                type="number"
+                value={editMob.dexMob}
+                onChange={(e) => setEditMob({ ...editMob, dexMob: parseInt(e.target.value) })}
               />
-              <label>Type :</label>
+              <label>SAG :</label>
               <input
-                type="text"
-                value={editWeapon.type}
-                onChange={(e) => setEditWeapon({ ...editWeapon, type: e.target.value })}
+                type="number"
+                value={editMob.sagMob}
+                onChange={(e) => setEditMob({ ...editMob, sagMob: parseInt(e.target.value) })}
               />
-              <button style={styles.button} onClick={handleEditEngine}>
+              <label>CON :</label>
+              <input
+                type="number"
+                value={editMob.conMob}
+                onChange={(e) => setEditMob({ ...editMob, conMob: parseInt(e.target.value) })}
+              />
+              <label>INT :</label>
+              <input
+                type="number"
+                value={editMob.intMob}
+                onChange={(e) => setEditMob({ ...editMob, intMob: parseInt(e.target.value) })}
+              />
+              <button style={styles.button} onClick={handleEditMob}>
                 Enregistrer
               </button>
               <button style={styles.button} onClick={handleCancelEdit}>
@@ -95,13 +106,17 @@ function MobDetail() {
             </div>
           ) : (
             <div>
-              <p><strong>Nom :</strong> {engine.name}</p>
-              <p><strong>Type :</strong> {engine.type}</p>
+              <p><strong>Nom :</strong> {mob.nameMob}</p>
+              <p><strong>STR :</strong> {mob.strMob}</p>
+              <p><strong>DEX :</strong> {mob.dexMob}</p>
+              <p><strong>SAG :</strong> {mob.sagMob}</p>
+              <p><strong>CON :</strong> {mob.conMob}</p>
+              <p><strong>INT :</strong> {mob.intMob}</p>
               <button style={styles.button} onClick={() => setIsEditing(true)}>
-                Modifier l'Engine
+                Modifier le Mob
               </button>
-              <button style={styles.button} onClick={handleDeleteEngine}>
-                Supprimer l'Engine
+              <button style={styles.button} onClick={handleDeleteMob}>
+                Supprimer le Mob
               </button>
             </div>
           )}
@@ -113,4 +128,4 @@ function MobDetail() {
   );
 }
 
-export default MobDetail;
+export default MobDetails;
