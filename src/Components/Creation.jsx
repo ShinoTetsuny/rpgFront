@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react'
 
 export default function Creation() {
     const [stats, setStats] = useState({
-        int: 2,
-        str: 2,
-        dex: 2,
-        sag: 2,
-        con: 2,
+        int: 5,
+        str: 5,
+        dex: 5,
+        sag: 5,
+        con: 5,
       });
     
       const handleIncrement = (stat) => {
@@ -16,7 +16,7 @@ export default function Creation() {
       };
     
       const handleDecrement = (stat) => {
-        if (stats[stat] > 2) {
+        if (stats[stat] > 5) {
           setStats({ ...stats, [stat]: stats[stat] - 1 });
         }
       };
@@ -26,7 +26,7 @@ export default function Creation() {
       }, [stats]);
 
       const totalPointsUsed = () => {
-        return Object.values(stats).reduce((total, stat) => total + stat - 2, 0); // Subtract initial value (2) from each stat
+        return Object.values(stats).reduce((total, stat) => total + stat - 5, 0); // Subtract initial value (2) from each stat
       };
     
       return (

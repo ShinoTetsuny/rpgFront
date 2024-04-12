@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react'
 import Countdown from 'react-countdown';
+import { Link } from 'react-router-dom';
 import '../styles/Combat.css';
+import axios from 'axios';
 
     // Stat modifiers table
     const statModifiers = {
@@ -24,6 +26,7 @@ import '../styles/Combat.css';
         },
     };
     
+    let lost = false;
 
     // Function to calculate modifiers for the player
     const calculatePlayerModifiers = (playerStats) => {
@@ -51,19 +54,66 @@ import '../styles/Combat.css';
         };
     };
 
-    // List of mobs
-    const mobs = [
-        { name: 'Goblin', stats: { int: 2, str: 3, dex: 4, sag: 2, con: 4 } },
-        { name: 'Skeleton', stats: { int: 1, str: 4, dex: 3, sag: 1, con: 3 } },
-        // Add more mobs as needed
-    ];
+    const mobs = [];
+    const bosses = [];
 
-    // List of bosses
-    const bosses = [
-        { name: 'Dragon', stats: { int: 5, str: 8, dex: 6, sag: 5, con: 7 }, damage: '10-15', cooldown: '6', type: 'Physical'},
-        { name: 'Demon', stats: { int: 6, str: 7, dex: 5, sag: 6, con: 8 }, damage: '1-3', cooldown: '2', type: 'Magical'},
-        // Add more bosses as needed
-    ];
+    const fetchMobs = async () => {
+        try {
+            const res = await axios.get('http://localhost:3000/mob');
+            return res.data;
+        } catch (error) {
+            console.error('Error fetching Mobs:', error);
+        }
+    }
+    const fetchBoss = async () => {
+        try {
+            const res = await axios.get('http://localhost:3000/boss');
+            return res.data;
+        } catch (error) {
+            console.error('Error fetching Boss:', error);
+        }
+    }
+
+    let dtbMobs = await fetchMobs();
+    let dtbBosses = await fetchBoss();
+    
+    console.log(dtbMobs);
+    console.log(dtbBosses);
+
+
+function generateMobBoss(){
+    dtbMobs.map((mob) => {
+        let tempMob = {
+            name: mob.nameMob,
+            stats: {
+                int: mob.intMob,
+                str: mob.strMob,
+                dex: mob.dexMob,
+                sag: mob.sagMob,
+                con: mob.conMob
+            }  
+        }
+        mobs.push(tempMob);
+    });
+    dtbBosses.map((boss) => {
+        let tempBoss = {
+            name: boss.nameBoss,
+            stats: {
+                int: boss.intBoss,
+                str: boss.strBoss,
+                dex: boss.dexBoss,
+                sag: boss.sagBoss,
+                con: boss.conBoss
+            },
+            damage: boss.dmgRangeBoss,
+            cooldown: boss.dmgCDBoss,
+            type: boss.typeBoss
+        }
+        bosses.push(tempBoss);
+    });
+}
+
+generateMobBoss();
 
     const weapons = [
         { name: 'Sword', damage: '5-10', cooldown: '3', type: 'Physical' },
@@ -156,8 +206,8 @@ import '../styles/Combat.css';
     };
 
     const options = [
-        { name: 'light', weight: 3 },
-        { name: 'normal', weight: 2 },
+        { name: 'light', weight: 2 },
+        { name: 'normal', weight: 4 },
         { name: 'heavy', weight: 1 }
     ];
     
@@ -212,12 +262,15 @@ import '../styles/Combat.css';
 const handleLose = () => {
     localStorage.setItem('CurrentFight', 0);
     currentFight = 0;
+    lost = true;
 };
+
+let firstAttack = true;
+let rendered = false;
 
 export default function Combat() {
     const [playerHealth, setPlayerHealth] = useState(player.health);
     const [mobBossHealth, setMobBossHealth] = useState(mobBoss.health);
-    const [firstAttack, setFirstAttack] = useState('true');
     const playerTimerActive = useRef();
     const mobBossTimerActive = useRef();
     const [deadMobBoss, setDeadMobBoss] = useState(true);
@@ -253,14 +306,14 @@ export default function Combat() {
         if (deadMobBoss) {
             generateFight();
             setDeadMobBoss(false);
-
+            rendered ? firstAttack = true : '';
         }
     },[deadMobBoss]);
 
     useEffect(() => {
-        if (turn === 'player') {
+        if (turn === 'player' && !lost) {
             document.getElementById('attack-buttons').style.border = '3px solid green';
-        }else{
+        }else if (turn === 'mobBoss' && !lost){
             document.getElementById('attack-buttons').style.border = '3px solid red';
         }
     },[turn]);
@@ -272,6 +325,7 @@ export default function Combat() {
                 mobBoss.health -= Math.floor(damage - (parseInt(mobBoss.modifiers.phyRes) / 100) * damage);
                 if (mobBoss.health < 0) {
                     mobBoss.health = 0;
+                    setDeadMobBoss(true);
                 }
                 setMobBossHealth(mobBoss.health);
                 
@@ -280,6 +334,7 @@ export default function Combat() {
                 mobBoss.health -= Math.floor(damage - (parseInt(mobBoss.modifiers.magRes) / 100) * damage);
                 if (mobBoss.health < 0) {
                     mobBoss.health = 0;
+                    setDeadMobBoss(true);
                 }
                 setMobBossHealth(mobBoss.health);
             }
@@ -292,14 +347,16 @@ export default function Combat() {
                 if (player.health < 0) {
                     player.health = 0;
                 }
-                setPlayerHealth(player.health);
+                turn === "mobBoss" ?setPlayerHealth(player.health):'';
+                console.log('dmg to player', damage);
             }else{
                 let damage = calculateDamage(mobBoss.damageRange, mobBoss.modifiers.magAtk, mobBoss.atkType, attacker);
                 player.health -= Math.floor(damage - (parseInt(playerModifiers.magRes) / 100) * damage);
                 if (player.health < 0) {
                     player.health = 0;
                 }
-                setPlayerHealth(player.health);
+                turn === "mobBoss" ?setPlayerHealth(player.health):'';
+                console.log('dmg to player', damage);
             }
         }
         
@@ -329,7 +386,7 @@ export default function Combat() {
         if (turn === 'player'){
             handleAttack(attacker, type);
             if (firstAttack) {
-                setFirstAttack(false);
+                firstAttack = false;
                 handleMobBossStart();
                 handlePlayerStart();
             }else{
@@ -342,58 +399,69 @@ export default function Combat() {
         localStorage.setItem('CurrentFight', currentFight);
     };
 
-    return (
-        <div id='battle-container'>
-            <div className='battle-info'>
-                <div>
-                    {bossFight ? <h3>Boss Timer</h3> : <h3>Mob Timer</h3>}
+    rendered = true;
+
+    if(!lost){
+        return (
+            <div id='battle-container'>
+                <div className='battle-info'>
                     <div>
-                        <Countdown
-                            date={Date.now() + (mobBoss.timer * 1000)}
-                            precision={2}
-                            intervalDelay={0}
-                            renderer={({seconds,milliseconds}) => {
-                                return <span id='mob-boss-timer'>{seconds}.{milliseconds}</span>;
-                            }}
-                            onComplete={handleMobBossTimerFinish}
-                            onTick={() => {mobBoss.timer = mobBoss.timer - 0.01;}}
-                            autoStart={false}
-                            ref={mobBossTimerActive}
-                        />
+                        {bossFight ? <h3>Boss Timer</h3> : <h3>Mob Timer</h3>}
+                        <div>
+                            <Countdown
+                                date={Date.now() + (mobBoss.timer * 1000)}
+                                precision={2}
+                                intervalDelay={0}
+                                renderer={({seconds,milliseconds}) => {
+                                    return <span id='mob-boss-timer'>{seconds}.{milliseconds}</span>;
+                                }}
+                                onComplete={handleMobBossTimerFinish}
+                                onTick={() => {mobBoss.timer = mobBoss.timer - 0.01;}}
+                                autoStart={false}
+                                ref={mobBossTimerActive}
+                            />
+                        </div>
+                        <h3>{mobBoss.name} Health: {mobBoss.health}</h3>
+                        <div style={{ border: '1px solid black', width: '200px', marginBottom: '10px' }}>
+                            <div id="mob-boss-health-bar" style={{ backgroundColor: 'red', width: '100%', height: '20px' }}></div>
+                        </div>
                     </div>
-                    <h3>{mobBoss.name} Health: {mobBoss.health}</h3>
-                    <div style={{ border: '1px solid black', width: '200px', marginBottom: '10px' }}>
-                        <div id="mob-boss-health-bar" style={{ backgroundColor: 'red', width: '100%', height: '20px' }}></div>
+                    <div>
+                        <h3>Player Health: {player.health}</h3>
+                        <div style={{ border: '1px solid black', width: '200px', marginBottom: '10px' }}>
+                            <div id="player-health-bar" style={{ backgroundColor: 'green', width: '100%', height: '20px' }}></div>
+                        </div>
+                        <h3>Player Timer</h3>
+                        <div>
+                            <Countdown
+                                date={Date.now() + (playerTimer * 1000)}
+                                precision={2}
+                                intervalDelay={0}
+                                renderer={({seconds,milliseconds}) => {
+                                    return <span id='player-timer'>{seconds}.{milliseconds}</span>;
+                                }}
+                                onComplete={handlePlayerTimerFinish}
+                                onTick={() => {playerTimer = playerTimer - 0.01;}}
+                                autoStart={false}
+                                ref={playerTimerActive}
+                            />
+                        </div>
                     </div>
                 </div>
-                <div>
-                    <h3>Player Health: {player.health}</h3>
-                    <div style={{ border: '1px solid black', width: '200px', marginBottom: '10px' }}>
-                        <div id="player-health-bar" style={{ backgroundColor: 'green', width: '100%', height: '20px' }}></div>
-                    </div>
-                    <h3>Player Timer</h3>
-                    <div>
-                        <Countdown
-                            date={Date.now() + (playerTimer * 1000)}
-                            precision={2}
-                            intervalDelay={0}
-                            renderer={({seconds,milliseconds}) => {
-                                return <span id='player-timer'>{seconds}.{milliseconds}</span>;
-                            }}
-                            onComplete={handlePlayerTimerFinish}
-                            onTick={() => {playerTimer = playerTimer - 0.01;}}
-                            autoStart={false}
-                            ref={playerTimerActive}
-                        />
-                    </div>
+                <div id="attack-buttons">
+                    <button onClick={() => {handleAttackClick('player','light'); handleMobBossStart();handlePlayerStart();}}>Light Attack</button>
+                    <button onClick={() => {handleAttackClick('player', 'normal'); handleMobBossStart();handlePlayerStart();}}>Normal Attack</button>
+                    <button onClick={() => {handleAttackClick('player', 'heavy'); handleMobBossStart();handlePlayerStart();}}>Heavy Attack</button>
                 </div>
             </div>
-            <div id="attack-buttons">
-                <button onClick={() => {handleAttackClick('player','light'); handleMobBossStart();handlePlayerStart();}}>Light Attack</button>
-                <button onClick={() => {handleAttackClick('player', 'normal'); handleMobBossStart();handlePlayerStart();}}>Normal Attack</button>
-                <button onClick={() => {handleAttackClick('player', 'heavy'); handleMobBossStart();handlePlayerStart();}}>Heavy Attack</button>
+        );
+    }else{
+        return (
+            <div>
+                <h1>Vous avez perdu!</h1>
+                <Link to="/">Retour à la création de personnage</Link>
             </div>
-        </div>
-    );
+        );
+    }
 }
 

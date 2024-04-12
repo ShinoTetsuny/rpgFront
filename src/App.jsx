@@ -5,8 +5,11 @@ import './styles/App.css'
 import { Link } from 'react-router-dom';
 
 function App() {
-    localStorage.setItem('currentCharacterStats', JSON.stringify({ int: 0, str: 0, dex: 0, sag: 0, con: 0 }));
-    localStorage.setItem('currentCharacterWeapon', JSON.stringify({ name: 'Rien', damage: '0-0', cooldown: '0', type: 'Physical' }));
+
+    if (!localStorage.getItem('currentCharacterStats') && !localStorage.getItem('currentCharacterWeapon')) {
+        localStorage.setItem('currentCharacterStats', JSON.stringify({ int: 0, str: 0, dex: 0, sag: 0, con: 0 }));
+        localStorage.setItem('currentCharacterWeapon', JSON.stringify({ name: 'Rien', damage: '0-0', cooldown: '0', type: 'Physical' }));
+    }
     const [showWarning, setShowWarning] = useState(false);
 
     const handleSaveCharacter = () => {

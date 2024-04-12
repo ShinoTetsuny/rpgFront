@@ -1,18 +1,38 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+
+let rendered = false;
 
 export default function Weapon() {
     const [selectedWeapon, setSelectedWeapon] = useState('');
-    const weapons = [
-        { name: 'Sword', damage: '5-10', cooldown: '3', type: 'Physical' },
-        { name: 'Bow', damage: '3-7', cooldown: '2.5', type: 'Physical' },
-        { name: 'Staff', damage: '2-5', cooldown: '1.5', type: 'Magical' },
-        { name: 'Dagger', damage: '4-6', cooldown: '2', type: 'Physical' },
-        { name: 'Axe', damage: '6-8', cooldown: '3.5', type: 'Physical' },
-        { name: 'Mace', damage: '7-9', cooldown: '4', type: 'Physical' },
-        { name: 'Spear', damage: '8-11', cooldown: '3.5', type: 'Physical' },
-        { name: 'Hammer', damage: '9-12', cooldown: '5', type: 'Physical' }
-    ];
-  
+    const [weapons, setWeapons] = useState([]);
+
+    const fetchWeapon = async () => {
+        try {
+            const res = await axios.get('http://localhost:3000/weapon');
+            return res.data;
+        } catch (error) {
+            console.error('Error fetching Weapon:', error);
+        }
+    }
+    useEffect(() => {
+        const getWeapons = async () => {
+            const weaponsFromServer = await fetchWeapon();
+            weaponsFromServer.map((weapon) => {
+                let tempWeapon = {
+                    name: weapon.nameWeapon,
+                    damage: weapon.dmgRangeWeapon,
+                    cooldown: weapon.dmgCDWeapon,
+                    type: weapon.type
+                }
+                setWeapons((weapons) => [...weapons, tempWeapon]);
+            });
+        }
+        !rendered ? getWeapons() : console.log('Already rendered weapons');
+        rendered = true;
+    }, []);
+
+    console.log(weapons);
     const handleWeaponChange = (event) => {
         setSelectedWeapon(event.target.value);
         localStorage.setItem('currentCharacterWeapon', JSON.stringify(weapons.find((weapon) => weapon.name === event.target.value))); // Save selected weapon stats to local storage
