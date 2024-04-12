@@ -156,6 +156,7 @@ generateMobBoss();
     // Calculate modifiers for the player and mob/boss
     const playerModifiers = calculatePlayerModifiers(player.stats);
     let playerTimer = player.selectedWeapon.type === "Physical" ? Math.floor((parseInt(player.selectedWeapon.cooldown) - playerModifiers.phySpd * player.stats.dex)*100)/100 : Math.floor((parseInt(player.selectedWeapon.cooldown) - playerModifiers.magSpd * player.stats.sag)*100)/100;
+    playerTimer <= 0 ? playerTimer = 0.5 : '';
     let playerFullTimer = playerTimer;
     // Function to select a random mob
     const selectRandomMob = () => {

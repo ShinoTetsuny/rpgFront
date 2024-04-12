@@ -41,7 +41,7 @@ function App() {
             {showWarning && (
             <div className="warning">Please allocate all stat points and select a weapon before saving.</div>
             )}
-            <button onClick={handleSaveCharacter}>Save Character</button>
+            <button onClick={handleSaveCharacter}><Link to="/combat">Au combat!</Link></button>
         </>
     )
 }
