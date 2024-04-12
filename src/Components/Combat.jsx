@@ -391,8 +391,10 @@ export default function Combat() {
         const mobBossHealthPercent = (mobBoss.health / mobBoss.fullhealth) * 100;
 
         // Update health bar widths dynamically
-        document.getElementById('player-health-bar').style.width = `${playerHealthPercent}%`;
-        document.getElementById('mob-boss-health-bar').style.width = `${mobBossHealthPercent}%`;
+        if (!lost) {
+            document.getElementById('player-health-bar').style.width = `${playerHealthPercent}%`;
+            document.getElementById('mob-boss-health-bar').style.width = `${mobBossHealthPercent}%`;
+        }
     },[playerHealth, mobBossHealth, deadMobBoss]);
     
 
