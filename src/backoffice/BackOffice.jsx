@@ -12,7 +12,7 @@ function BackOffice() {
 
     const [newMob, setNewMob] = useState({ nameMob: '', strMob: 0, dexMob: 0, sagMob: 0, conMob: 0, intMob: 0});
     const [newBoss, setNewBoss] = useState({ nameBoss: "", strBoss: 0, dexBoss: 0, sagBoss: 0, conBoss: 0,intBoss: 0, dmgRangeBoss: '', dmgCDBoss: 0});
-    const [newWeapon, setNewWeapon] = useState({ nameWeapon: '', dmgRangeWeapon: '', dmgCDWeapon: 0, type: ''});
+    const [newWeapon, setNewWeapon] = useState({ nameWeapon: '', dmgRangeWeapon: '', dmgCDWeapon: 0, type: 'Physical'});
 
     const fetchMobs = async () => {
         try {
@@ -63,7 +63,7 @@ function BackOffice() {
         try {
             await axios.post('http://localhost:3000/weapon', newWeapon);
             fetchWeapon();
-            setNewWeapon({ nameWeapon: '', dmgRangeWeapon: '', dmgCDWeapon: 0, type: ''});
+            setNewWeapon({ nameWeapon: '', dmgRangeWeapon: '', dmgCDWeapon: 0, type: 'Physical'});
           } catch (error) {
             console.error('Error creating Mob:', error);
           }

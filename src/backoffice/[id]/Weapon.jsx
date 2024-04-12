@@ -70,23 +70,22 @@ function WeaponDetails() {
               />
               <label>Range Weapon :</label>
               <input
-                type="number"
+                type="text"
                 value={editWeapon.dmgRangeWeapon}
                 onChange={(e) => setEditWeapon({ ...editWeapon, dmgRangeWeapon: e.target.value })}
               />
               <label>CDR Weapon :</label>
               <input
-                type="text"
+                type="number"
                 value={editWeapon.dmgCDWeapon}
                 onChange={(e) => setEditWeapon({ ...editWeapon, dmgCDWeapon: e.target.value })}
               />
               <label>Type :</label>
-              <input
-                type="text"
-                value={editWeapon.type}
-                onChange={(e) => setEditWeapon({ ...editWeapon, type: e.target.value })}
-              />
-              <button style={styles.button} onClick={handleEditEngine}>
+              <select value={editWeapon.type} onChange={(e) => setEditWeapon({ ...editWeapon, type: e.target.value })}>
+                  <option value="Physical">Physical</option>
+                  <option value="Magical">Magical</option>
+              </select>
+              <button style={styles.button} onClick={handleEditWeapon}>
                 Enregistrer
               </button>
               <button style={styles.button} onClick={handleCancelEdit}>
@@ -95,12 +94,14 @@ function WeaponDetails() {
             </div>
           ) : (
             <div>
-              <p><strong>Nom :</strong> {engine.name}</p>
-              <p><strong>Type :</strong> {engine.type}</p>
+              <p><strong>Nom :</strong> {weapon.nameWeapon}</p>
+              <p><strong>RangeDamage :</strong> {weapon.dmgRangeWeapon}</p>
+              <p><strong>CRD :</strong> {weapon.dmgCDWeapon}</p>
+              <p><strong>Type :</strong> {weapon.type}</p>
               <button style={styles.button} onClick={() => setIsEditing(true)}>
                 Modifier l'Engine
               </button>
-              <button style={styles.button} onClick={handleDeleteEngine}>
+              <button style={styles.button} onClick={handleDeleteWeapon}>
                 Supprimer l'Engine
               </button>
             </div>
