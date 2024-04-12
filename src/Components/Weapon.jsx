@@ -1,5 +1,3 @@
-//Créer Tableau (BDD FACTICE) d'arme
-//Selection de l'arme
 import React, { useState } from 'react';
 
 export default function Weapon() {

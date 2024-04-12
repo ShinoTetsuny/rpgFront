@@ -91,8 +91,15 @@ import '../styles/Combat.css';
     localStorage.getItem('currentFight') ? '' : localStorage.setItem('CurrentFight', 0);
     let currentFight = parseInt(localStorage.getItem('CurrentFight'));
     let bossFight = false;
-
-    let player= {stats : JSON.parse(localStorage.getItem('currentCharacterStats')), selectedWeapon : JSON.parse(localStorage.getItem('currentCharacterWeapon'))};
+    let player = {
+        stats: { int: 2, str: 2, dex: 2, sag: 2, con: 2 },
+        selectedWeapon: { name: 'Rien', damage: '0-0', cooldown: '0', type: 'Physical' },
+        test : 'test'
+    };
+    if (localStorage.getItem('currentCharacterStats') !== null && localStorage.getItem('currentCharacterWeapon') !== null) {
+        player= {stats : JSON.parse(localStorage.getItem('currentCharacterStats')), selectedWeapon : JSON.parse(localStorage.getItem('currentCharacterWeapon'))};
+    }
+    console.log(player);
     player.fullhealth = 10 + player.stats.con * 5;
     player.health = player.fullhealth;
     const playerWeaponDamage = player.selectedWeapon.damage;

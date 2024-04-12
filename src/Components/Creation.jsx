@@ -1,6 +1,3 @@
-//Mettre en place le formulaire de séléction de stats
-//Bouton pour commencer les combats.
-//Envoyer les données du joueur dans le local storage
 import React, { useState, useEffect } from 'react'
 
 export default function Creation() {
